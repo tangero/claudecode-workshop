@@ -54,7 +54,7 @@ fi
 [ -f "$CIL/settings.json" ] || echo '{}' > "$CIL/settings.json"
 mkdir -p "$ZALOHA" && cp "$CIL/settings.json" "$ZALOHA/settings.json"
 python3 -I - "$CIL/settings.json" "$MARKET" "$REPO_GH" <<'EOF'
-import json, sys
+import json, os, sys
 p, market, repo = sys.argv[1:4]
 with open(p, encoding="utf-8") as f:
     d = json.load(f)
@@ -77,7 +77,9 @@ for udalost, skript in (("UserPromptSubmit", "hlidac-kontextu.py"), ("SessionSta
     if not skupiny:
         continue
     for g in skupiny:
-        g["hooks"] = [h for h in g.get("hooks", []) if f"~/.claude/hooks/{skript}" not in (h.get("command") or "")]
+        g["hooks"] = [h for h in g.get("hooks", []) if not any(
+            f"{koren}/.claude/hooks/{skript}" in (h.get("command") or "")
+            for koren in ("~", "$HOME", os.path.expanduser("~")))]
     d["hooks"][udalost] = [g for g in skupiny if g.get("hooks")]
     if not d["hooks"][udalost]:
         del d["hooks"][udalost]
