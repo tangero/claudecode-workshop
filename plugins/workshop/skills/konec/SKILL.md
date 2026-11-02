@@ -239,7 +239,7 @@ Pak zapiš všechno:
    **Git:** <commit · push / bez remote / bez gitu · cizí rozdělaná práce>
 
 5. **Poslední věta** je buď
-   - `Všechno ze session je zapsané – prompty N/N. Session můžeš zavřít.`, nebo
+   - `Všechno ze session je zapsané – prompty N/N. Teď `/clear` a `/pokracuj`.`, nebo
    - `Zapsané to není celé – chybí: <konkrétně>.`
 
 ## Časté chyby

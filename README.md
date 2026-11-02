@@ -5,7 +5,7 @@ Pět příkazů pro Claude Code, se kterými se práce neztrácí mezi sessions 
 ```
 nápad / PRD ──/oponentura──► stavba ──/codex-review──► merge
       ▲                                           │
-      └──── /pokracuj ◄── další session ◄── /konec ┘
+      └──── /pokracuj ◄── /clear ◄── /konec ──────┘
 ```
 
 ## Instalace
@@ -45,7 +45,7 @@ Ručně: `claude plugin marketplace update claudecode-workshop`.
 | [`/oponentura`](plugins/workshop/skills/oponentura/) | před stavbou, nad PRD nebo myšlenkou | úpravy PRD, `decisions.md` (i zamítnuté námitky), otevřené otázky s testem v `todo.md` |
 | [`/codex-review`](plugins/workshop/skills/codex-review/) | před merge větve nebo PR | opravy na větvi, `docs/review.md` se zamítnutými nálezy, odložené věci v `todo.md` |
 | [`/konec`](plugins/workshop/skills/konec/) | na konci každé session | `## Kde jsme skončili` v `todo.md` + všechno rozhodnuté na svém místě |
-| [`/pokracuj`](plugins/workshop/skills/pokracuj/) | na začátku další session | nic, jen ověří předávku a začne prvním krokem |
+| [`/pokracuj`](plugins/workshop/skills/pokracuj/) | po `/clear` nebo druhý den | nic, jen ověří předávku a začne prvním krokem |
 
 Všechny pracují nad stejnou strukturou projektu (`CLAUDE.md`, `docs/PRD.md`, `PLAN.md`, `todo.md`, `decisions.md`, `gotchas.md`…) a stejně třídí nálezy:
 
@@ -59,7 +59,7 @@ Všechny pracují nad stejnou strukturou projektu (`CLAUDE.md`, `docs/PRD.md`, `
 | Část | Co dělá |
 |---|---|
 | [statusline](plugins/workshop/statusline/) | model, adresář, větev, PR, zaplnění kontextu, cena podle API, limity předplatného |
-| [hlídač kontextu](plugins/workshop/hooks/) | při plném kontextu navrhne `/konec` a novou session |
+| [hlídač kontextu](plugins/workshop/hooks/) | při plném kontextu navrhne `/konec` → `/clear` → `/pokracuj` |
 | [uvítání](plugins/workshop/hooks/) | po instalaci představí balík, po aktualizaci řekne, co je nového |
 | [bez-diffu](plugins/bez-diffu/) | místo diffu po každé úpravě jen řádek `soubor · +12 −3`, celý diff pod **ctrl+o** |
 

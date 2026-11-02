@@ -98,13 +98,13 @@ def main():
         if prah == seznam[-1]:
             zprava = (
                 f"Kontext je zaplněný na {procenta:.0f} %. Nezačínej nové větší téma. "
-                "Dokonči rozdělaný krok a na konci odpovědi uživateli navrhni spustit /konec "
-                "a pokračovat v nové session příkazem /pokracuj. Řekni to jednou větou."
+                "Dokonči rozdělaný krok a na konci odpovědi uživateli navrhni postup /konec → /clear → /pokracuj "
+                "(zapsat práci, vyprázdnit kontext, navázat). Řekni to jednou větou."
             )
         else:
             zprava = (
                 f"Kontext je zaplněný na {procenta:.0f} %. Až dokončíš aktuální krok, "
-                "jednou větou uživateli navrhni /konec a novou session s /pokracuj, "
+                "jednou větou uživateli navrhni postup /konec → /clear → /pokracuj, "
                 "pokud další práce není jen drobnost."
             )
 

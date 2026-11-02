@@ -91,9 +91,9 @@
 <div class="flow" style="margin-top:1.4mm">
   <div class="step k" style="background:#e6f0fb"><b>/konec</b><small>na konci každé session</small></div>
   <div class="arr">→</div>
-  <div class="step"><b>Zavřít okno</b><small>konverzace zmizí, soubory zůstanou</small></div>
+  <div class="step"><b>/clear</b><small>vyprázdní kontext, soubory zůstanou</small></div>
   <div class="arr">→</div>
-  <div class="step k" style="background:#e5f4ef"><b>/pokracuj</b><small>na začátku další session</small></div>
+  <div class="step k" style="background:#e5f4ef"><b>/pokracuj</b><small>po /clear nebo druhý den</small></div>
   <div class="arr">→</div>
   <div class="step"><b>První krok</b><small>přesně tam, kde jste skončili</small></div>
 </div>
@@ -135,7 +135,7 @@
 
   <div class="card" style="--c:var(--c2)">
     <h3>/pokracuj</h3>
-    <div class="tag">Na začátku další session. Převzetí směny.</div>
+    <div class="tag">Po /clear nebo druhý den. Převzetí směny.</div>
     <dl>
       <dt>Kdy</dt><dd>Vracíte se k projektu: druhý den, v novém okně, po <code>/clear</code>.</dd>
       <dt>Jak</dt><dd><code>/pokracuj</code> nebo „kde jsme skončili?“</dd>
@@ -189,8 +189,8 @@
    └─ design.md · readers.md · inputs.md · …</div>
   <div class="rules">
     <ol>
-      <li><b>Co není v souboru, to neexistuje.</b> Konverzace se po zavření okna nebo po kompaktaci ztratí.</li>
-      <li><b>Jedna session = jedno téma.</b> Nové téma? <code>/konec</code>, nové okno, <code>/pokracuj</code>.</li>
+      <li><b>Co není v souboru, to neexistuje.</b> Konverzace se po /clear nebo kompaktaci ztratí.</li>
+      <li><b>Jedna session = jedno téma.</b> Nové téma nebo plný kontext? <code>/konec</code> → <code>/clear</code> → <code>/pokracuj</code>.</li>
       <li><b>Nejdřív oponentura, pak kód.</b> Přepsat odstavec je levnější než přepsat aplikaci.</li>
       <li><b>Review jednou, pořádně.</b> Drobnosti se nehlásí, opakované nálezy se stanou pravidlem v <code>CLAUDE.md</code>.</li>
       <li><b>Ztracený?</b> <code>/pruvodce</code> vysvětlí postup a připraví strukturu projektu.</li>

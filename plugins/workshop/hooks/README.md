@@ -4,7 +4,7 @@ Model sám nevidí, jak plný má kontext. Plný kontext je přitom nejčastěj�
 
 `hlidac-kontextu.py` je `UserPromptSubmit` hook a při každé vaší zprávě kontext změří:
 
-- **od 60 %:** po dokončení kroku Claude jednou větou navrhne `/konec` a novou session s `/pokracuj`,
+- **od 60 %:** po dokončení kroku Claude jednou větou navrhne postup `/konec` → `/clear` → `/pokracuj`,
 - **od 80 %:** Claude nezačne nové větší téma, dokončí rozdělané a `/konec` navrhne hned.
 
 Na každém prahu se ozve jen jednou. Když kontext klesne (po kompaktaci), prahy se znovu odjistí.

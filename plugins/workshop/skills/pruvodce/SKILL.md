@@ -30,13 +30,13 @@ Tohle vysvětli svými slovy, nejvýš na 15 řádcích:
 ```
 nápad / PRD ──/oponentura──► stavba ──/codex-review──► merge
       ▲                                                 │
-      └──── /pokracuj ◄── další session ◄── /konec ─────┘
+      └──── /pokracuj ◄── /clear ◄── /konec ────────────┘
 ```
 
 - **`/oponentura`** použij, než začneš stavět. Napiš myšlenku nebo dej cestu k `docs/PRD.md`. Nezávislí oponenti najdou slabá místa, ty rozhodneš, co s nimi.
 - **`/codex-review`** použij před merge PR. Proběhne jedno kolo review, opravy a verdikt. Mergovat se bude až s tvým souhlasem.
 - **`/konec`** použij na konci každé session. Uloží rozhodnutí, otevřené otázky a „kde jsme skončili“ do souborů projektu. Bez něj se to, co se řeklo jen v chatu, ztratí.
-- **`/pokracuj`** použij na začátku další session. Přečte předávku, ověří ji proti gitu a začne prvním krokem.
+- **`/pokracuj`** použij po `/clear` nebo na začátku další session. Postup na konci práce i při plném kontextu je vždy `/konec` → `/clear` → `/pokracuj`. Přečte předávku, ověří ji proti gitu a začne prvním krokem.
 
 K tomu běží automaticky:
 
