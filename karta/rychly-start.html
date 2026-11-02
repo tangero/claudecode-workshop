@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Rychlý start – workshopový balík Claude Code</title>
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --ink: #1d1f24; --muted: #5b616e; --line: #d9dce3; --bg: #f5f6f8;
+    --c1: #6b4fd8; --c2: #0f8a6a; --c3: #d9480f; --c4: #1c6fd1; --c5: #8a5a00;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 210mm; height: 297mm; }
+  body {
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink); background: #fff; font-size: 8.3pt; line-height: 1.32;
+    padding: 9mm 11mm 7mm;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  code, .cmd { font-family: "SF Mono", Menlo, monospace; }
+  code { font-size: 0.92em; background: var(--bg); padding: 0 3px; border-radius: 3px; }
+
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--ink); padding-bottom: 3mm; }
+  h1 { font-size: 19pt; letter-spacing: -0.4px; line-height: 1.05; }
+  h1 span { color: var(--c1); }
+  .sub { color: var(--muted); font-size: 9pt; margin-top: 1mm; }
+  .install { text-align: right; font-size: 8pt; color: var(--muted); }
+  .install .cmd { display: inline-block; margin-top: 0.8mm; font-family: "SF Mono", Menlo, monospace; white-space: nowrap; background: var(--ink); color: #fff; padding: 1.2mm 2.5mm; border-radius: 4px; font-size: 7.6pt; }
+
+  h2 { font-size: 9.5pt; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin: 3.2mm 0 1.6mm; }
+
+  /* cyklus */
+  .flow { display: flex; align-items: stretch; gap: 0; }
+  .step { flex: 1; text-align: center; padding: 1.2mm 1mm; border-radius: 6px; background: var(--bg); }
+  .step b { display: block; font-size: 9.5pt; }
+  .step small { color: var(--muted); font-size: 7.4pt; }
+  .step.k b { font-family: "SF Mono", Menlo, monospace; }
+  .arr { width: 5mm; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 11pt; }
+  .loop { text-align: center; color: var(--muted); font-size: 7.6pt; margin-top: 1.2mm; }
+
+  /* karty příkazů */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4mm; }
+  .card { border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 6px; padding: 2mm 2.6mm 2.2mm; }
+  .card h3 { font-family: "SF Mono", Menlo, monospace; font-size: 11.5pt; color: var(--c); }
+  .card .tag { font-size: 8pt; color: var(--muted); margin-bottom: 1.2mm; }
+  .card dl { display: grid; grid-template-columns: 17mm 1fr; row-gap: 0.7mm; column-gap: 2mm; }
+  .card dt { font-weight: 700; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: var(--muted); padding-top: 0.3mm; }
+  .card dd ul { padding-left: 3.5mm; }
+  .tip { margin-top: 1.3mm; font-size: 7.6pt; background: var(--bg); border-radius: 4px; padding: 1.2mm 2mm; }
+
+  /* automatické */
+  .auto { display: grid; grid-template-columns: 1.9fr 1fr 1fr; gap: 2.4mm; }
+  .box { border: 1px solid var(--line); border-radius: 6px; padding: 1.8mm 2.4mm; }
+  .box h4 { font-size: 9.5pt; margin-bottom: 1mm; }
+  .sl { font-family: "SF Mono", Menlo, monospace; font-size: 6.6pt; background: #15171c; color: #e6e6e6; border-radius: 4px; padding: 1.4mm 2mm; margin: 1mm 0 1.4mm; white-space: nowrap; overflow: hidden; }
+  .sl .g { color: #4fd18b; } .sl .y { color: #f2c94c; } .sl .r { color: #ff6b6b; } .sl .c { color: #56c8e8; } .sl .m { color: #c792ea; } .sl .d { color: #8a8f99; }
+  .box ul { padding-left: 3.5mm; }
+
+  /* spodek */
+  .bottom { display: grid; grid-template-columns: 1fr 1.1fr; gap: 2.4mm; }
+  .tree { font-family: "SF Mono", Menlo, monospace; font-size: 7pt; line-height: 1.36; background: var(--bg); border-radius: 6px; padding: 1.8mm 2.4mm; white-space: pre; }
+  .tree .n { color: var(--muted); font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  .rules { border: 1px solid var(--line); border-radius: 6px; padding: 1.8mm 2.4mm 1.8mm 2mm; }
+  .rules ol { padding-left: 4mm; }
+  .rules li { margin-bottom: 0.6mm; }
+  footer { margin-top: 2.5mm; padding-top: 2mm; border-top: 1px solid var(--line); display: flex; justify-content: space-between; color: var(--muted); font-size: 7.4pt; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Rychlý start <span>· Claude Code</span></h1>
+    <div class="sub">Pět příkazů pro práci, která se neztratí mezi sessions. Kdy co použít a jak.</div>
+  </div>
+  <div class="install">Instalace v Claude Code (jednou):<br><span class="cmd">/plugin marketplace add tangero/claudecode-workshop</span><br><span class="cmd">/plugin install workshop@claudecode-workshop</span><br>pak <b>/pruvodce</b> · aktualizuje se samo</div>
+</header>
+
+<h2>Pracovní cyklus</h2>
+<div class="flow">
+  <div class="step"><b>Nápad / PRD</b><small>co a pro koho</small></div>
+  <div class="arr">→</div>
+  <div class="step k" style="background:#efeafd"><b>/oponentura</b><small>najdi slabá místa</small></div>
+  <div class="arr">→</div>
+  <div class="step"><b>Stavba</b><small>větev, commity</small></div>
+  <div class="arr">→</div>
+  <div class="step k" style="background:#fdeee6"><b>/codex-review</b><small>review → opravy → verdikt</small></div>
+  <div class="arr">→</div>
+  <div class="step"><b>Merge</b><small>až s vaším souhlasem</small></div>
+</div>
+<div class="flow" style="margin-top:1.4mm">
+  <div class="step k" style="background:#e6f0fb"><b>/konec</b><small>na konci každé session</small></div>
+  <div class="arr">→</div>
+  <div class="step"><b>Zavřít okno</b><small>konverzace zmizí, soubory zůstanou</small></div>
+  <div class="arr">→</div>
+  <div class="step k" style="background:#e5f4ef"><b>/pokracuj</b><small>na začátku další session</small></div>
+  <div class="arr">→</div>
+  <div class="step"><b>První krok</b><small>přesně tam, kde jste skončili</small></div>
+</div>
+
+<h2>Příkazy</h2>
+<div class="grid">
+  <div class="card" style="--c:var(--c1)">
+    <h3>/oponentura</h3>
+    <div class="tag">Než začnete stavět. Najde důvody, proč by to nemělo vyjít.</div>
+    <dl>
+      <dt>Kdy</dt><dd>Máte nápad, PRD, návrh nebo plán a chcete vědět, jestli drží.</dd>
+      <dt>Jak</dt><dd><code>/oponentura</code> (vezme <code>docs/PRD.md</code>)<br><code>/oponentura chci appku na…</code> (myšlenka v textu)</dd>
+      <dt>Výsledek</dt><dd>Verdikt 🟢 stavět · 🟡 po vyřešení · 🟠 ověřit · 🔴 přepracovat, pak námitky po jedné.</dd>
+    </dl>
+    <div class="tip"><b>Tip:</b> nejcennější jsou <i>mylně známé</i> (fakta, která nejsou fakty) a předpoklady s <i>nejlevnějším testem</i>.</div>
+  </div>
+
+  <div class="card" style="--c:var(--c3)">
+    <h3>/codex-review</h3>
+    <div class="tag">Před merge. Jedno kolo review, žádné nekonečné kolečko.</div>
+    <dl>
+      <dt>Kdy</dt><dd>Větev je hotová a má otevřený PR na GitHubu.</dd>
+      <dt>Jak</dt><dd><code>/codex-review</code> (nejnovější PR) · <code>/codex-review 12</code></dd>
+      <dt>Výsledek</dt><dd>Testy → review v Codexu → ověřené nálezy → nejvýš 10 oprav → ✅ / ⚠️ / ❌ → merge po potvrzení.</dd>
+    </dl>
+    <div class="tip"><b>Tip:</b> zamítnuté nálezy se zapíšou do <code>docs/review.md</code> a příště se nevrátí. Potřebuje <code>codex</code> a <code>gh</code>.</div>
+  </div>
+
+  <div class="card" style="--c:var(--c4)">
+    <h3>/konec</h3>
+    <div class="tag">Na konci každé session. Předávka směny.</div>
+    <dl>
+      <dt>Kdy</dt><dd>Končíte práci, kontext je nad 60 %, nebo měníte téma.</dd>
+      <dt>Jak</dt><dd><code>/konec</code>. Sporné věci s vámi probere po jedné.</dd>
+      <dt>Výsledek</dt><dd>Rozhodnutí a záludnosti v <code>docs/</code>, nahoře v <code>todo.md</code> sekce <b>Kde jsme skončili</b> (rozdělané, první krok, důsledky). Commit.</dd>
+    </dl>
+    <div class="tip"><b>Tip:</b> kontroluje každý váš prompt. Končí větou „prompty N/N“. Když chybí, řekne co.</div>
+  </div>
+
+  <div class="card" style="--c:var(--c2)">
+    <h3>/pokracuj</h3>
+    <div class="tag">Na začátku další session. Převzetí směny.</div>
+    <dl>
+      <dt>Kdy</dt><dd>Vracíte se k projektu: druhý den, v novém okně, po <code>/clear</code>.</dd>
+      <dt>Jak</dt><dd><code>/pokracuj</code> nebo „kde jsme skončili?“</dd>
+      <dt>Výsledek</dt><dd>Shrnutí do 8 řádků, ověřené proti gitu (nové commity, jiná větev?), a rovnou první krok.</dd>
+    </dl>
+    <div class="tip"><b>Tip:</b> funguje i bez příkazu. <code>CLAUDE.md</code> Claudovi řekne, ať si předávku přečte sám.</div>
+  </div>
+</div>
+
+<h2>Běží samo</h2>
+<div class="auto">
+  <div class="box">
+    <h4>Statusline</h4>
+    <div class="sl"><b>Opus 5.5</b> <span class="d">· high │</span> <span class="c">můj-projekt</span> <span class="d">│</span> <span class="m">⎇ main</span> <span class="y">●3</span> <span class="d">↑1 │</span> PR #12 ✓</div>
+    <div class="sl"><span class="y">▓▓▓▓▓▓▓</span><span class="d">░░░</span> <span class="y">72 %</span> <span class="d">kontextu</span> <span class="r">→ /konec</span> <span class="d">│</span> ≈ $1.84 API <span class="d">│</span> <span class="g">5h 31 %</span> <span class="d">│</span> <span class="g">+120</span> <span class="r">−15</span></div>
+    <ul>
+      <li><b>●3</b> necommitnuté soubory · <b>↑1</b> commit neodeslaný na GitHub</li>
+      <li><b>$</b> je odhad podle ceníku API. Na předplatném ho neplatíte.</li>
+    </ul>
+  </div>
+  <div class="box">
+    <h4>Hlídač kontextu</h4>
+    <ul>
+      <li><b>60 %:</b> Claude po dokončení kroku navrhne <code>/konec</code>.</li>
+      <li><b>80 %:</b> nezačne nové téma, dokončí rozdělané.</li>
+      
+    </ul>
+  </div>
+  <div class="box">
+    <h4>Bez diffů</h4>
+    <ul>
+      <li>Po úpravě souboru jen řádek <code>soubor · +12 −3</code>.</li>
+      <li>Celý diff: <b>ctrl+o</b>.</li>
+      <li>Před schválením úpravy diff vidíte vždy.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Kam se co zapisuje · pravidla palce</h2>
+<div class="bottom">
+<div class="tree">projekt/
+├─ CLAUDE.md        <span class="n">pravidla a příkazy pro Clauda</span>
+├─ README.md        <span class="n">pro lidi</span>
+└─ docs/
+   ├─ PRD.md        <span class="n">co se staví a pro koho</span>
+   ├─ PLAN.md       <span class="n">kroky, odškrtávají se</span>
+   ├─ todo.md       <span class="n">Kde jsme skončili · úkoly · otázky</span>
+   ├─ decisions.md  <span class="n">rozhodnutí i s důvodem</span>
+   ├─ gotchas.md    <span class="n">záludnosti, „pozor na…“</span>
+   ├─ review.md     <span class="n">zamítnuté nálezy z review</span>
+   └─ design.md · readers.md · inputs.md · …</div>
+  <div class="rules">
+    <ol>
+      <li><b>Co není v souboru, to neexistuje.</b> Konverzace se po zavření okna nebo po kompaktaci ztratí.</li>
+      <li><b>Jedna session = jedno téma.</b> Nové téma? <code>/konec</code>, nové okno, <code>/pokracuj</code>.</li>
+      <li><b>Nejdřív oponentura, pak kód.</b> Přepsat odstavec je levnější než přepsat aplikaci.</li>
+      <li><b>Review jednou, pořádně.</b> Drobnosti se nehlásí, opakované nálezy se stanou pravidlem v <code>CLAUDE.md</code>.</li>
+      <li><b>Ztracený?</b> <code>/pruvodce</code> vysvětlí postup a připraví strukturu projektu.</li>
+    </ol>
+  </div>
+</div>
+
+<footer>
+  <span>Claude Code workshop · Patrick Zandl</span>
+  <span>/pruvodce · /oponentura · /codex-review · /konec · /pokracuj</span>
+</footer>
+
+</body>
+</html>

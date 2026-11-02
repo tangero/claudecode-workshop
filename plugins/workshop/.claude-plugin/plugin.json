@@ -1,0 +1,7 @@
+{
+  "name": "workshop",
+  "description": "Pracovní postup pro Claude Code: /oponentura, /codex-review, /konec, /pokracuj a /pruvodce, hlídač kontextu a statusline.",
+  "author": { "name": "Patrick Zandl" },
+  "homepage": "https://github.com/tangero/claudecode-workshop",
+  "license": "MIT"
+}

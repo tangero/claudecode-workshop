@@ -1,0 +1,8 @@
+{
+  "name": "claudecode-workshop",
+  "owner": { "name": "Patrick Zandl" },
+  "plugins": [
+    { "name": "workshop", "source": "./plugins/workshop", "description": "Skilly /oponentura, /codex-review, /konec, /pokracuj, /pruvodce, hlídač kontextu a statusline." },
+    { "name": "bez-diffu", "source": "./plugins/bez-diffu", "description": "Místo diffu po Edit/Write jen jeden řádek se souborem a počtem změn." }
+  ]
+}

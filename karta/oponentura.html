@@ -1,0 +1,395 @@
+<title>Jak funguje /oponentura</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: jedna úzká čtecí osa, kroky jako svislá trasa s čísly; námitky jako "spisy" s barevným okrajem podle osudu. */
+:root {
+  --bg: #f3f5f9;
+  --surface: #ffffff;
+  --sunken: #e9edf3;
+  --ink: #141c2b;
+  --muted: #586379;
+  --line: #d5dce7;
+  --accent: #2c46c9;
+  --accent-soft: #e4e8fb;
+  --attack: #b8460e;
+  --attack-soft: #fbeadf;
+  --survive: #0e7468;
+  --survive-soft: #dcf1ed;
+  --refuted: #8c95a6;
+  --warn: #9a6a00;
+  --warn-soft: #f8eccb;
+  --bad: #b42335;
+  --bad-soft: #f8e0e3;
+  --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141d; --surface: #171e2a; --sunken: #1e2735; --ink: #e8ecf3; --muted: #9aa5b8; --line: #2c3647;
+    --accent: #8ea0ff; --accent-soft: #232c4d; --attack: #f0925c; --attack-soft: #3a2418;
+    --survive: #4cc7b5; --survive-soft: #15302d; --refuted: #6f798b; --warn: #e4b54a; --warn-soft: #362c14;
+    --bad: #f07383; --bad-soft: #3a1c22; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141d; --surface: #171e2a; --sunken: #1e2735; --ink: #e8ecf3; --muted: #9aa5b8; --line: #2c3647;
+  --accent: #8ea0ff; --accent-soft: #232c4d; --attack: #f0925c; --attack-soft: #3a2418;
+  --survive: #4cc7b5; --survive-soft: #15302d; --refuted: #6f798b; --warn: #e4b54a; --warn-soft: #362c14;
+  --bad: #f07383; --bad-soft: #3a1c22; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.12; }
+h2 { font-size: clamp(24px, 4vw, 32px); font-weight: 700; letter-spacing: -0.3px; }
+h3 { font-size: 18px; font-weight: 700; }
+p { margin: 0; }
+code, .mono { font-family: var(--f-mono); font-size: 0.9em; }
+code { background: var(--sunken); padding: 1px 6px; border-radius: 4px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+.lead { color: var(--muted); max-width: 62ch; }
+section { display: flex; flex-direction: column; gap: 18px; }
+
+/* hero */
+.hero { padding-top: 48px; display: grid; grid-template-columns: 1.25fr 1fr; gap: 32px; align-items: center; }
+.hero h1 { font-size: clamp(40px, 7vw, 68px); font-weight: 800; letter-spacing: -1.5px; }
+.hero h1 span { color: var(--accent); }
+.hero .lead { font-size: 18px; margin-top: 14px; color: var(--ink); }
+.hero .lead em { color: var(--muted); font-style: normal; }
+.terminal { background: #121722; color: #dfe5ef; border-radius: 10px; padding: 16px 18px; font-family: var(--f-mono); font-size: 13.5px; line-height: 1.7; overflow-x: auto; border: 1px solid var(--line); }
+.terminal .p { color: #7f8aa0; }
+.terminal .c { color: #9fb0ff; }
+.terminal .d { color: #7f8aa0; }
+
+/* kdy */
+.when { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.when > div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+.when ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.when .yes h3 { color: var(--survive); }
+.when .no h3 { color: var(--muted); }
+
+/* trasa kroků */
+.route { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.route > li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; position: relative; padding-bottom: 26px; }
+.route > li:not(:last-child)::before { content: ""; position: absolute; left: 21px; top: 44px; bottom: 0; width: 2px; background: var(--line); }
+.num { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; font-size: 18px; background: var(--surface); border: 2px solid var(--accent); color: var(--accent); }
+.route li.you .num { background: var(--accent); color: var(--surface); }
+.step { min-width: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
+.step .who { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.step .who b { color: var(--accent); font-weight: 500; }
+
+/* oponenti */
+.panel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 4px; }
+.opp { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 13px; line-height: 1.4; min-width: 0; }
+.opp b { display: block; font-family: var(--f-display); font-size: 14px; margin-bottom: 3px; }
+.opp span { color: var(--muted); }
+.note { font-size: 14px; color: var(--muted); }
+.note b { color: var(--ink); }
+
+/* trychtýř */
+.funnel { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.bar { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.bar i { display: block; height: 26px; border-radius: 5px; }
+.bar .lbl { white-space: nowrap; }
+.bar .n { font-family: var(--f-mono); font-weight: 500; min-width: 2ch; text-align: right; }
+
+/* matice */
+.matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cell { border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--line); background: var(--surface); min-width: 0; }
+.cell .tag { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.8px; text-transform: uppercase; }
+.cell .ex { font-size: 14px; color: var(--muted); border-left: 3px solid var(--line); padding-left: 10px; }
+.cell .act { font-size: 14px; font-weight: 600; }
+.cell.false { grid-column: 1 / -1; background: var(--bad-soft); border-color: transparent; }
+.cell.false .tag, .cell.false .act { color: var(--bad); }
+.cell.ku { background: var(--warn-soft); border-color: transparent; }
+.cell.ku .tag, .cell.ku .act { color: var(--warn); }
+.cell.uk { background: var(--accent-soft); border-color: transparent; }
+.cell.uk .tag, .cell.uk .act { color: var(--accent); }
+.cell.uu .tag, .cell.uu .act { color: var(--muted); }
+.cell.kk { opacity: 0.75; }
+.cell.kk .tag { color: var(--survive); }
+
+/* spis námitky */
+.dossier { background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--attack); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+.dossier .head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.pill { font-family: var(--f-mono); font-size: 12px; padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+.pill.attack { background: var(--attack-soft); color: var(--attack); }
+.pill.ok { background: var(--survive-soft); color: var(--survive); }
+.dl { display: grid; grid-template-columns: 120px 1fr; gap: 6px 14px; font-size: 15px; }
+.dl dt { font-family: var(--f-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); padding-top: 3px; }
+.dl dd { margin: 0; min-width: 0; }
+blockquote { margin: 0; font-style: italic; }
+
+/* dialog */
+.dialog { background: #121722; color: #dfe5ef; border-radius: 10px; padding: 16px 18px; font-size: 14px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--line); }
+.dialog .chip { font-family: var(--f-mono); font-size: 11.5px; background: #2a3550; color: #b9c6ff; padding: 2px 8px; border-radius: 4px; align-self: flex-start; }
+.dialog .opt { border: 1px solid #2f3a52; border-radius: 6px; padding: 8px 12px; }
+.dialog .opt.sel { border-color: #9fb0ff; background: #1c2540; }
+.dialog .opt small { display: block; color: #8d98ae; }
+
+/* verdikty */
+.verdicts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.v { border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.v b { font-family: var(--f-display); font-size: 17px; }
+.v span { font-size: 14px; }
+.v.g { background: var(--survive-soft); } .v.g b { color: var(--survive); }
+.v.y { background: var(--warn-soft); } .v.y b { color: var(--warn); }
+.v.o { background: var(--attack-soft); } .v.o b { color: var(--attack); }
+.v.r { background: var(--bad-soft); } .v.r b { color: var(--bad); }
+
+/* zápis */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--f-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+
+.tips { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tip { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; font-size: 15px; }
+.tip b { display: block; font-family: var(--f-display); font-size: 16px; margin-bottom: 4px; }
+
+@media (max-width: 760px) {
+  .hero, .when, .matrix, .tips { grid-template-columns: 1fr; }
+  .panel { grid-template-columns: 1fr 1fr; }
+  .verdicts { grid-template-columns: 1fr 1fr; }
+  .dl { grid-template-columns: 1fr; gap: 2px; }
+  .dl dd { margin-bottom: 8px; }
+  .cell.false { grid-column: auto; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bar i { transition: width .6s ease; }
+}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Skill pro Claude Code · workshopový balík</div>
+    <h1 style="margin-top:10px">Oponentura <span>před stavbou</span></h1>
+    <p class="lead">Pošle na váš nápad několik kritiků, kteří o vás nic nevědí. Každou jejich námitku se pak někdo pokusí vyvrátit. Uvidíte jen ty, které obstojí, a o každé rozhodnete sami. <em>Přepsat odstavec v zadání je levnější než přepsat hotovou aplikaci.</em></p>
+  </div>
+  <div class="terminal" aria-label="Ukázka spuštění">
+    <div><span class="p">›</span> <span class="c">/oponentura</span></div>
+    <div class="d">  vezme docs/PRD.md</div>
+    <div style="margin-top:8px"><span class="p">›</span> <span class="c">/oponentura</span> docs/navrh-plateb.md</div>
+    <div class="d">  konkrétní dokument</div>
+    <div style="margin-top:8px"><span class="p">›</span> <span class="c">/oponentura</span> rodinná appka na recepty,</div>
+    <div>  předplatné 99 Kč měsíčně</div>
+    <div class="d">  jen myšlenka, napsaná do chatu</div>
+  </div>
+</header>
+
+<section>
+  <div class="eyebrow">Kdy ji použít</div>
+  <div class="when">
+    <div class="yes">
+      <h3>Ano</h3>
+      <ul>
+        <li>Máte nápad a chcete vědět, jestli dává smysl.</li>
+        <li>Je hotové PRD, návrh nebo plán a ještě se nezačalo programovat.</li>
+        <li>Rozhoduje se něco, co se těžko vrací: platby, smlouvy, migrace dat.</li>
+      </ul>
+    </div>
+    <div class="no">
+      <h3>Ne</h3>
+      <ul>
+        <li>Na kód. Na ten je <code>/codex-review</code>.</li>
+        <li>Na rozepsanou kostru. Oponenti by hlásili jen „tady chybí text“.</li>
+        <li>Na drobnou úpravu, kde se nic zásadního nerozhoduje.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Jak probíhá</div>
+  <h2>Sedm kroků. Do dvou z nich vstupujete vy.</h2>
+  <p class="lead">Celý průběh ukážeme na jednom nápadu: <b>rodinná aplikace na sdílení receptů, předplatné 99 Kč měsíčně</b>. Čísla v příkladu jsou ilustrační.</p>
+
+  <ol class="route">
+    <li>
+      <div class="num">1</div>
+      <div class="step">
+        <h3>Co se oponuje</h3>
+        <div class="who">dělá <b>Claude</b></div>
+        <p>Claude si přečte předmět a vše, co k němu v projektu patří: <code>CLAUDE.md</code>, kdo jsou čtenáři, jaká jsou data. Podívá se i do <code>docs/decisions.md</code> na námitky, které jste už dřív zamítli. Ty znovu nevznese.</p>
+      </div>
+    </li>
+    <li>
+      <div class="num">2</div>
+      <div class="step">
+        <h3>Nejsilnější verze vašeho nápadu</h3>
+        <div class="who">dělá <b>Claude</b></div>
+        <p>Než začne kritizovat, napíše nápad do tří vět tak přesvědčivě, jak to jde: co se staví, pro koho a proč by to mělo vyjít. Když to nejde napsat, je to první nález: zadání neříká, co chce.</p>
+        <p class="note">„Rodiny ztrácejí recepty po babičkách v sešitech a zprávách. Aplikace je sesbírá na jedno místo, kam přispívá celá rodina. Platí jeden člen za všechny.“</p>
+      </div>
+    </li>
+    <li>
+      <div class="num">3</div>
+      <div class="step">
+        <h3>Výběr hledisek</h3>
+        <div class="who">dělá <b>Claude</b></div>
+        <p>Z osmi hledisek vybere tři až pět, u kterých by chyba stála nejvíc. Každé dostane jeden oponent. U každého řekne, proč ho vybral, a jedno hledisko, které vědomě vynechal.</p>
+      </div>
+    </li>
+    <li>
+      <div class="num">4</div>
+      <div class="step">
+        <h3>Nezávislí oponenti</h3>
+        <div class="who">dělají <b>subagenti bez kontextu</b>, všichni najednou</div>
+        <p>Oponenti nevidí váš rozhovor s Claudem, jen soubory. Kdo ví, jak to autor myslel, najde jen to, co autor sám. Každý vrátí nejvýš pět námitek.</p>
+        <div class="panel" role="list">
+          <div class="opp" role="listitem"><b>Pre-mortem</b><span>Je rok poté a projekt selhal. Proč?</span></div>
+          <div class="opp" role="listitem"><b>Předpoklady</b><span>Co musí platit, a nikdo to neověřil?</span></div>
+          <div class="opp" role="listitem"><b>Uživatel</b><span>Pochopí to? Zaplatí? Kde odpadne?</span></div>
+          <div class="opp" role="listitem"><b>Ekonomika</b><span>Sedí cena, náklady a čas?</span></div>
+          <div class="opp" role="listitem"><b>Alternativy</b><span>Nejde to jednodušeji?</span></div>
+        </div>
+        <p class="note">K dispozici jsou ještě <b>Proveditelnost</b>, <b>Nevratnost a závislosti</b> a <b>Zneužití a právo</b>.</p>
+      </div>
+    </li>
+    <li>
+      <div class="num">5</div>
+      <div class="step">
+        <h3>Pokus o vyvrácení</h3>
+        <div class="who">dělají <b>ověřovatelé</b>, opět bez kontextu</div>
+        <p>Každá závažná námitka dostane vlastního ověřovatele, který ji má <b>vyvrátit</b>. Hledá, jestli odpověď už není v dokumentu a jestli důsledek opravdu plyne. Ověří i tvrzení typu „to už existuje“, třeba na webu. Vyvrácené námitky se vám vůbec neukážou.</p>
+        <div class="funnel" aria-label="Kolik námitek projde">
+          <div class="bar"><i style="width:min(92%,420px);background:var(--attack-soft)"></i><span class="n">21</span><span class="lbl">námitek od oponentů</span></div>
+          <div class="bar"><i style="width:min(57%,260px);background:var(--attack)"></i><span class="n">13</span><span class="lbl">závažných jde k ověření</span></div>
+          <div class="bar"><i style="width:min(26%,120px);background:var(--survive)"></i><span class="n">6</span><span class="lbl">obstálo, ty uvidíte</span></div>
+        </div>
+      </div>
+    </li>
+    <li class="you">
+      <div class="num">6</div>
+      <div class="step">
+        <h3>Verdikt a námitky po jedné</h3>
+        <div class="who">rozhodujete <b>vy</b></div>
+        <p>Nejdřív krátký přehled s verdiktem. Pak vám Claude položí námitky jednu po druhé, od nejsilnější. Ke každé dostanete věcné volby, ne „opravit / přeskočit“.</p>
+      </div>
+    </li>
+    <li class="you">
+      <div class="num">7</div>
+      <div class="step">
+        <h3>Zápis do projektu</h3>
+        <div class="who">schvalujete <b>vy</b>, zapisuje Claude</div>
+        <p>Teprve po vašich rozhodnutích se všechno zapíše najednou. Bez vašeho souhlasu se v dokumentech nic nezmění.</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <div class="eyebrow">Jak vypadá jedna námitka</div>
+  <h2>Námitka je spis, ne dojem</h2>
+  <p class="lead">„Nebude to škálovat“ se nepočítá. Každá námitka musí říct, kde přesně je problém, co se stane a jak to nejlevněji zjistit.</p>
+  <article class="dossier">
+    <div class="head">
+      <h3>Rodina neplatí za to, co má zadarmo ve WhatsAppu</h3>
+      <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill attack">BOŘÍ</span><span class="pill ok">obstála</span></div>
+    </div>
+    <dl class="dl">
+      <dt>Kde</dt><dd><blockquote>„Platí jeden člen za všechny, 99 Kč měsíčně.“</blockquote> (PRD, Cena)</dd>
+      <dt>Co</dt><dd>Recepty si rodiny dnes posílají zdarma. Dokument nikde neříká, proč by za to někdo začal platit.</dd>
+      <dt>Důsledek</dt><dd>Když z 50 testovacích rodin nezaplatí ani pět, nepokryje příjem ani hosting. Projekt skončí po prvním roce.</dd>
+      <dt>Jak ověřit</dt><dd>Landing page s tlačítkem „Předplatit“ a 30 rodin z okolí. Měří se, kolik jich klikne.</dd>
+      <dt>Ověřovatel</dt><dd>Pokusil se ji vyvrátit: v PRD ani v <code>docs/readers.md</code> není doklad ochoty platit. Námitka obstála.</dd>
+    </dl>
+  </article>
+
+  <div class="dialog" aria-label="Ukázka otázky v Claude Code">
+    <span class="chip">Námitka 1/6</span>
+    <div>Co s námitkou „Rodina neplatí za to, co má zadarmo“?</div>
+    <div class="opt sel">Ověřit testem předem<small>Landing page pro 30 rodin. Když klikne méně než 5, cenový model přepracujeme.</small></div>
+    <div class="opt">Změnit model na jednorázovou platbu<small>Do PRD se zapíše jednorázových 290 Kč za rodinu místo předplatného.</small></div>
+    <div class="opt">Zamítnout<small>Zapíše se s důvodem do decisions.md a příště se nevrátí.</small></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Roztřídění</div>
+  <h2>Rumsfeldova matice: co víme, co nevíme a co si jen myslíme</h2>
+  <p class="lead">Námitky, které obstály, se roztřídí podle toho, jakého druhu je to nevědomost. Každý druh se řeší jinak.</p>
+  <div class="matrix">
+    <div class="cell false">
+      <span class="tag">Mylně známé · nejvyšší priorita</span>
+      <h3>Co dokument tvrdí jako fakt, a fakt to není</h3>
+      <p class="ex">„Konkurence neexistuje.“ Ověřovatel našel tři aplikace na rodinné recepty, jednu zdarma.</p>
+      <span class="act">Opravit dřív, než se na tom začne stavět.</span>
+    </div>
+    <div class="cell ku">
+      <span class="tag">Známé neznámé</span>
+      <h3>Víme, že to nevíme</h3>
+      <p class="ex">Zaplatí rodiny 99 Kč měsíčně?</p>
+      <span class="act">Nejlevnější test a hranice, kdy projekt zastavit.</span>
+    </div>
+    <div class="cell uk">
+      <span class="tag">Neznámé známé</span>
+      <h3>Autor to ví, ale v textu to chybí</h3>
+      <p class="ex">Kdo smí recept smazat, když ho přidala babička?</p>
+      <span class="act">Doplnit do dokumentu.</span>
+    </div>
+    <div class="cell uu">
+      <span class="tag">Neznámé neznámé</span>
+      <h3>Co oponentura posoudit nemohla</h3>
+      <p class="ex">Skutečné chování rodin se od stolu odhadnout nedá.</p>
+      <span class="act">Přiznat v závěru, nezamlčet.</span>
+    </div>
+    <div class="cell kk">
+      <span class="tag">Známé známé</span>
+      <h3>Co obstálo a je doložené</h3>
+      <p class="ex">Problém ztracených receptů potvrzují rozhovory v readers.md.</p>
+      <span class="act">Nevypisuje se. Oponentura nechválí.</span>
+    </div>
+  </div>
+  <p class="note">K tomu třídění podle dopadu: <b>vada</b> se musí vyřešit, <b>k rozhodnutí</b> jde k vám, <b>náměty</b> nejvýš tři, <b>drobnosti</b> se nehlásí. Pět námitek, které něco rozhodnou, je lepších než dvacet, které přeskočíte.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Verdikt</div>
+  <h2>Čtyři možné výsledky</h2>
+  <div class="verdicts">
+    <div class="v g"><b>🟢 Stavět</b><span>Nic nebourá, zbývají jen náměty.</span></div>
+    <div class="v y"><b>🟡 Po vyřešení</b><span>Stavět, až se opraví konkrétní vady.</span></div>
+    <div class="v o"><b>🟠 Nejdřív ověřit</b><span>Bez testu klíčového předpokladu je stavba sázka.</span></div>
+    <div class="v r"><b>🔴 Přepracovat</b><span>Základ nedrží, je potřeba nový návrh.</span></div>
+  </div>
+  <p class="note">Náš ukázkový nápad by dostal <b>🟠 Nejdřív ověřit</b>: problém je skutečný, ale ochota platit není doložená.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Co zůstane v projektu</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Vaše rozhodnutí</th><th>Kam se zapíše</th></tr></thead>
+      <tbody>
+        <tr><td>Přijatá úprava</td><td>Do PRD (u myšlenky do nového <code>docs/PRD.md</code>, jen s vaším souhlasem). Rozhodnutí i s důvodem do <code>docs/decisions.md</code>.</td></tr>
+        <tr><td>Ověřit testem</td><td><code>docs/todo.md</code> → Otevřené otázky: předpoklad, test a kdy zastavit</td></tr>
+        <tr><td>Zamítnuto</td><td><code>docs/decisions.md</code> → Zamítnuté námitky. Příští oponentura je nevznese znovu.</td></tr>
+        <tr><td>Odloženo</td><td><code>docs/todo.md</code> s kontextem, aby šlo navázat</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Tipy pro začátek</div>
+  <div class="tips">
+    <div class="tip"><b>Začněte myšlenkou</b>PRD mít nemusíte. Napište nápad do dvou vět za <code>/oponentura</code>.</div>
+    <div class="tip"><b>Neberte to osobně</b>Oponenti nechválí schválně. Ticho u nějaké části znamená, že obstála.</div>
+    <div class="tip"><b>Zamítnout je v pořádku</b>Námitka může být pravdivá a přesto nepodstatná. Zamítnutí s důvodem je platné rozhodnutí.</div>
+    <div class="tip"><b>Opakujte po úpravách</b>Druhá oponentura použije stejná hlediska, takže uvidíte, jestli se nápad zlepšil. Námitka, která se vrátí, nebyla opravená.</div>
+  </div>
+</section>
+
+</div>

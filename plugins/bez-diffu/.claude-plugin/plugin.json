@@ -1,0 +1,1 @@
+{ "name": "bez-diffu", "description": "Místo diffu po Edit/Write ukáže jen jeden řádek se souborem a počtem změněných řádků; celý diff je dál pod ctrl+o.", "author": { "name": "Patrick Zandl" }, "license": "MIT" }
